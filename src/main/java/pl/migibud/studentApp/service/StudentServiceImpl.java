@@ -5,15 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.migibud.studentApp.exception.student.StudentError;
 import pl.migibud.studentApp.exception.student.StudentException;
 import pl.migibud.studentApp.model.Status;
 import pl.migibud.studentApp.model.Student;
+import pl.migibud.studentApp.model.dto.CreateStudentRequest;
+import pl.migibud.studentApp.model.dto.StudentDto;
+import pl.migibud.studentApp.model.mapper.StudentMapper;
 import pl.migibud.studentApp.repository.StudentRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,28 +24,36 @@ import java.util.stream.Collectors;
 public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
+    private final StudentMapper studentMapper;
 
     @Override
-    public Student addStudent(Student student) {
+    public StudentDto addStudent(CreateStudentRequest createStudentRequest) {
+        Student student = studentMapper.mapCreateStudentRequestToStudent(createStudentRequest);
         student.setStatus(Status.ACTIVE);
-        return studentRepository.save(student);
+        return studentMapper.mapStudentToStudentDto(studentRepository.save(student));
     }
 
     @Override
-    public Page<Student> listStudents(PageRequest pageRequest) {
+    public Page<StudentDto> listStudents(PageRequest pageRequest) {
         Page<Student> studentPage = studentRepository.findAll(pageRequest);
-        List<Student> content = studentPage.getContent();
-        return new PageImpl<>(content,studentPage.getPageable(),studentPage.getTotalElements());
+        List<StudentDto> collect = studentPage.getContent().stream()
+                .map(studentMapper::mapStudentToStudentDto)
+                .collect(Collectors.toList());
+        return new PageImpl<>(collect, studentPage.getPageable(), studentPage.getTotalElements());
     }
 
     @Override
-    public Student getStudentById(Long studentId) {
+    public StudentDto getStudentById(Long studentId) {
         return studentRepository.findById(studentId)
-                .orElseThrow(()->new StudentException(StudentError.STUDENT_NOT_FOUND));
+                .map(studentMapper::mapStudentToStudentDto)
+                .orElseThrow(() -> new StudentException(StudentError.STUDENT_NOT_FOUND));
     }
 
     @Override
-    public boolean deleteStudentById(Long studentId) {
-        return false;
+    public void deleteStudentById(Long studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new StudentException(StudentError.STUDENT_NOT_FOUND));
+        student.setStatus(Status.INACTIVE);
+        studentRepository.save(student);
     }
 }

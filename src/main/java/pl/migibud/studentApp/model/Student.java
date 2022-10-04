@@ -22,7 +22,6 @@ public class Student {
     @NotBlank
     String lastName;
     @Enumerated(value = EnumType.STRING)
-    @NotNull
     Status status;
 
     @JsonIgnore

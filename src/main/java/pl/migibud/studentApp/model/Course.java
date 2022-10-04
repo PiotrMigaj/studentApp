@@ -2,10 +2,8 @@ package pl.migibud.studentApp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -23,7 +21,6 @@ public class Course {
     @NotBlank
     String name;
     @Enumerated(value = EnumType.STRING)
-    @NotNull
     Status status;
     @NotNull
     Long participantsLimit;
