@@ -13,6 +13,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 class AppUser implements UserDetails {
 
     @Id
