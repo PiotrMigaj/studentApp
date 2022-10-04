@@ -1,7 +1,7 @@
 spring:
   datasource:
     username: root
-    password: migi987
+    password: Stefan0987
     url: jdbc:mysql://localhost/sda_student_course_spring?serverTimezone=Europe/Warsaw&createDatabaseIfNotExist=true
   jpa:
     hibernate:

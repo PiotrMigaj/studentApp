@@ -1,5 +1,6 @@
 package pl.migibud.studentApp.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -27,6 +28,7 @@ class AppUserRole implements GrantedAuthority {
         this.name = name;
     }
 
+    @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "roles")
