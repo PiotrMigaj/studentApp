@@ -8,6 +8,6 @@ import pl.migibud.studentApp.model.Student;
 public interface EnrolmentService {
     Enrolment addEnrolment(Enrolment enrolment);
     Page<Enrolment> listEnrolments(PageRequest pageRequest);
-    Enrolment getEnrolmentById(Enrolment enrolmentId);
-    boolean deleteEnrolmentById(Enrolment enrolmentId);
+    Enrolment getEnrolmentById(Long enrolmentId);
+    void deleteEnrolmentById(Long enrolmentId);
 }
