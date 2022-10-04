@@ -1,19 +1,16 @@
 package pl.migibud.studentApp.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-class Enrolment {
+public class Enrolment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,13 +18,15 @@ class Enrolment {
     @CreationTimestamp
     LocalDateTime createdAt;
     @Enumerated(value = EnumType.STRING)
-    @NotNull
-    Status studentStatus;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "student_id")
     Student student;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "course_id")
     Course course;

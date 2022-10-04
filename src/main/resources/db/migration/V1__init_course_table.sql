@@ -4,7 +4,9 @@ create table course(
     name varchar(255) not null unique,
     start_date datetime,
     end_date datetime,
-    status varchar(255) not null
+    status varchar(255) not null,
+    participants_limit bigint not null,
+    participants_number bigint
 );
 
 

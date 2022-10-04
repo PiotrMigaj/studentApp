@@ -17,3 +17,6 @@ logging:
     org:
       hibernate:
         SQL: debug
+default:
+  participants:
+    limit: 5

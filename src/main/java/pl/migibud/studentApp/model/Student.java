@@ -1,11 +1,11 @@
 package pl.migibud.studentApp.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Entity
@@ -21,7 +21,13 @@ public class Student {
     String firstName;
     @NotBlank
     String lastName;
+    @Enumerated(value = EnumType.STRING)
+    @NotNull
+    Status status;
 
+    @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "student")
     Set<Enrolment> enrolments;
 }
