@@ -12,11 +12,27 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+
 logging:
   level:
     org:
       hibernate:
         SQL: debug
+
 default:
   participants:
     limit: 5
+
+application:
+  default:
+    roles:
+      - ROLE_ADMIN
+      - ROLE_USER
+      - ROLE_MODERATOR
+    users:
+      - username: admin
+        password: admin
+        roles: ROLE_ADMIN,ROLE_USER,ROLE_MODERATOR
+      - username: user
+        password: user
+        roles: ROLE_USER

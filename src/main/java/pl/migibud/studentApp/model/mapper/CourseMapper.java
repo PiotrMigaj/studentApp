@@ -14,16 +14,17 @@ import pl.migibud.studentApp.model.dto.StudentDto;
 public interface CourseMapper {
 
     @Mappings(value = {
-            @Mapping(target = "firstName", source = "name"),
-            @Mapping(target = "lastName", source = "status")
+            @Mapping(target = "name", source = "name"),
+            @Mapping(target = "status", source = "status")
     })
     Course mapCreateCourseRequestToCourse(CreateCourseRequest createCourseRequest);
 
     @Mappings(value = {
             @Mapping(target = "id", source = "id"),
-            @Mapping(target = "firstName", source = "firstName"),
-            @Mapping(target = "lastName", source = "lastName"),
-            @Mapping(target = "status", source = "status")
+            @Mapping(target = "name", source = "name"),
+            @Mapping(target = "status", source = "status"),
+            @Mapping(target = "participantsLimit", source = "participantsLimit"),
+            @Mapping(target = "participantsNumber", source = "participantsNumber")
     })
     CourseDto mapCourseToCourseDto(Course course);
 }

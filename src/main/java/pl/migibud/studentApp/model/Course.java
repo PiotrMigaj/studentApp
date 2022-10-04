@@ -33,12 +33,4 @@ public class Course {
     @OneToMany(mappedBy = "course")
     Set<Enrolment> enrolments;
 
-    @PrePersist
-    void prePersist() {
-        participantsLimit = InitialCourseData.LIMIT;
-    }
-
-    private void setParticipantsLimit(Long participantsLimit) {
-        this.participantsLimit = participantsLimit;
-    }
 }
