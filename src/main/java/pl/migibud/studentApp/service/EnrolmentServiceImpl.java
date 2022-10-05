@@ -2,10 +2,13 @@ package pl.migibud.studentApp.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 import pl.migibud.studentApp.exception.course.CourseError;
 import pl.migibud.studentApp.exception.course.CourseException;
 import pl.migibud.studentApp.exception.enrolment.EnrolmentError;
@@ -17,6 +20,7 @@ import pl.migibud.studentApp.model.Enrolment;
 import pl.migibud.studentApp.model.Status;
 import pl.migibud.studentApp.model.Student;
 import pl.migibud.studentApp.model.dto.CreateEnrolmentRequest;
+import pl.migibud.studentApp.model.event.StudentInactiveStatusEvent;
 import pl.migibud.studentApp.repository.CourseRepository;
 import pl.migibud.studentApp.repository.EnrolmentRepository;
 import pl.migibud.studentApp.repository.StudentRepository;
@@ -102,6 +106,26 @@ class EnrolmentServiceImpl implements EnrolmentService {
         Long participantsNumber = course.getParticipantsNumber();
         course.setParticipantsNumber(--participantsNumber);
         courseRepository.save(course);
+    }
+
+    @Async //TODO - Understand why @Async and @TransactionalEventListener
+    @EventListener
+    @Transactional
+    void handleStudentInactiveStatusEvent(StudentInactiveStatusEvent event){
+        log.info("Handling event - change status of student to INACTIVE - studentId: "+event.getStudentId());
+
+        List<Enrolment> enrolments = enrolmentRepository.findByStudent_IdAndStudentStatus(event.getStudentId(), Status.ACTIVE);
+        if (enrolments.size()>0){
+            enrolments
+                    .forEach(enrolment -> {
+                        enrolment.setStudentStatus(Status.INACTIVE);
+                        Course course = enrolment.getCourse();
+                        Long participantsNumber = course.getParticipantsNumber();
+                        course.setParticipantsNumber(--participantsNumber);
+                        courseRepository.save(course);
+                        enrolmentRepository.save(enrolment);
+                    });
+        }
     }
 
     private boolean isStudentStatusActive(Student student){

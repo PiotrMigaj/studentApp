@@ -2,16 +2,19 @@ package pl.migibud.studentApp.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.migibud.studentApp.exception.student.StudentError;
 import pl.migibud.studentApp.exception.student.StudentException;
 import pl.migibud.studentApp.model.Status;
 import pl.migibud.studentApp.model.Student;
 import pl.migibud.studentApp.model.dto.CreateStudentRequest;
 import pl.migibud.studentApp.model.dto.StudentDto;
+import pl.migibud.studentApp.model.event.StudentInactiveStatusEvent;
 import pl.migibud.studentApp.model.mapper.StudentMapper;
 import pl.migibud.studentApp.repository.StudentRepository;
 
@@ -25,6 +28,8 @@ public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
+
+    private final ApplicationEventPublisher publisher;
 
     @Override
     public StudentDto addStudent(CreateStudentRequest createStudentRequest) {
@@ -50,10 +55,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    @Transactional
     public void deleteStudentById(Long studentId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new StudentException(StudentError.STUDENT_NOT_FOUND));
         student.setStatus(Status.INACTIVE);
         studentRepository.save(student);
+        publisher.publishEvent(new StudentInactiveStatusEvent(studentId));
     }
 }
