@@ -22,6 +22,9 @@ class ExceptionControllerAdvice {
         if (StudentError.STUDENT_NOT_FOUND.equals(e.getStudentError())) {
             httpStatus = HttpStatus.NOT_FOUND;
         }
+        if (StudentError.STUDENT_IS_INACTIVE.equals(e.getStudentError())) {
+            httpStatus = HttpStatus.BAD_REQUEST;
+        }
         return ResponseEntity.status(httpStatus).body(new ErrorMessage(e.getStudentError().getMessage()));
     }
 
@@ -31,6 +34,12 @@ class ExceptionControllerAdvice {
         if (CourseError.COURSE_NOT_FOUND.equals(e.getCourseError())) {
             httpStatus = HttpStatus.NOT_FOUND;
         }
+        if (CourseError.COURSE_IS_INACTIVE.equals(e.getCourseError())) {
+            httpStatus = HttpStatus.BAD_REQUEST;
+        }
+        if (CourseError.PARTICIPANTS_LIMIT_EXCEEDED.equals(e.getCourseError())) {
+            httpStatus = HttpStatus.CONFLICT;
+        }
         return ResponseEntity.status(httpStatus).body(new ErrorMessage(e.getCourseError().getMessage()));
     }
 
@@ -39,6 +48,15 @@ class ExceptionControllerAdvice {
         HttpStatus httpStatus = null;
         if (EnrolmentError.ENROLMENT_NOT_FOUND.equals(e.getEnrolmentError())) {
             httpStatus = HttpStatus.NOT_FOUND;
+        }
+        if (EnrolmentError.STUDENT_ALREADY_ENROLLED_IN_COURSE.equals(e.getEnrolmentError())) {
+            httpStatus = HttpStatus.CONFLICT;
+        }
+        if (EnrolmentError.STUDENT_ALREADY_ENROLLED_IN_THREE_ACTIVE_COURSES.equals(e.getEnrolmentError())) {
+            httpStatus = HttpStatus.CONFLICT;
+        }
+        if (EnrolmentError.STUDENT_IS_NOT_ENROLLED_IN_COURSE.equals(e.getEnrolmentError())) {
+            httpStatus = HttpStatus.BAD_REQUEST;
         }
         return ResponseEntity.status(httpStatus).body(new ErrorMessage(e.getEnrolmentError().getMessage()));
     }

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum StudentError {
 
-    STUDENT_NOT_FOUND("Student does not exist");
+    STUDENT_NOT_FOUND("Student does not exist"),
+    STUDENT_IS_INACTIVE("Student is inactive");
     private final String message;
 }

@@ -19,8 +19,7 @@ public interface StudentMapper {
     @Mappings(value = {
             @Mapping(target = "id", source = "id"),
             @Mapping(target = "firstName", source = "firstName"),
-            @Mapping(target = "lastName", source = "lastName"),
-            @Mapping(target = "status", source = "status")
+            @Mapping(target = "lastName", source = "lastName")
     })
     StudentDto mapStudentToStudentDto(Student student);
 }

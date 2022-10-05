@@ -43,9 +43,9 @@ class StudentController {
         return ResponseEntity.created(URI.create("/api/student/"+studentDto.getId())).body(studentDto);
     }
 
-    @DeleteMapping("/{id}")
-    ResponseEntity<?> deleteStudent(@PathVariable Long id){
-        studentService.deleteStudentById(id);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-    }
+//    @DeleteMapping("/{id}")
+//    ResponseEntity<?> deleteStudent(@PathVariable Long id){
+//        studentService.deleteStudentById(id);
+//        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+//    }
 }

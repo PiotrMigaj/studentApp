@@ -24,7 +24,6 @@ public class Course {
     Status status;
     @NotNull
     Long participantsLimit;
-    @Min(0)
     Long participantsNumber;
 
     @JsonIgnore

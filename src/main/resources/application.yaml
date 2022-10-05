@@ -1,7 +1,7 @@
 spring:
   datasource:
     username: root
-    password: Stefan0987
+    password: migi987
     url: jdbc:mysql://localhost/sda_student_course_spring?serverTimezone=Europe/Warsaw&createDatabaseIfNotExist=true
   jpa:
     hibernate:
@@ -12,6 +12,9 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+#  jackson:
+#    serialization:
+#      write-dates-as-timestamps: false
 
 logging:
   level:

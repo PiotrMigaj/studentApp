@@ -31,6 +31,7 @@ class CourseServiceImpl implements CourseService {
     public CourseDto addCourse(CreateCourseRequest createCourseRequest) {
         Course course = courseMapper.mapCreateCourseRequestToCourse(createCourseRequest);
         course.setParticipantsLimit(initialCourseData.getLimit());
+        course.setParticipantsNumber(0L);
         return courseMapper.mapCourseToCourseDto(courseRepository.save(course));
     }
 
