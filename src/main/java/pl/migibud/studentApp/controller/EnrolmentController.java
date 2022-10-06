@@ -9,6 +9,7 @@ import pl.migibud.studentApp.model.Enrolment;
 import pl.migibud.studentApp.model.dto.CourseDto;
 import pl.migibud.studentApp.model.dto.CreateCourseRequest;
 import pl.migibud.studentApp.model.dto.CreateEnrolmentRequest;
+import pl.migibud.studentApp.model.dto.EnrolmentDto;
 import pl.migibud.studentApp.repository.EnrolmentRepository;
 import pl.migibud.studentApp.service.EnrolmentService;
 
@@ -23,6 +24,11 @@ import java.net.URI;
 class EnrolmentController {
 
     private final EnrolmentService enrolmentService;
+
+    @GetMapping("/{id}")
+    ResponseEntity<EnrolmentDto> getEnrolmentById(@PathVariable Long id){
+        return ResponseEntity.ok(enrolmentService.getEnrolmentById(id));
+    }
 
     @PostMapping
     ResponseEntity<Enrolment> enrollStudentInCourse(@RequestBody @Valid CreateEnrolmentRequest createEnrolmentRequest){

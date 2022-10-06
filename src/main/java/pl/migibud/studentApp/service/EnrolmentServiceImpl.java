@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionalEventListener;
 import pl.migibud.studentApp.exception.course.CourseError;
 import pl.migibud.studentApp.exception.course.CourseException;
 import pl.migibud.studentApp.exception.enrolment.EnrolmentError;
@@ -20,7 +19,9 @@ import pl.migibud.studentApp.model.Enrolment;
 import pl.migibud.studentApp.model.Status;
 import pl.migibud.studentApp.model.Student;
 import pl.migibud.studentApp.model.dto.CreateEnrolmentRequest;
+import pl.migibud.studentApp.model.dto.EnrolmentDto;
 import pl.migibud.studentApp.model.event.StudentInactiveStatusEvent;
+import pl.migibud.studentApp.model.mapper.EnrolmentMapper;
 import pl.migibud.studentApp.repository.CourseRepository;
 import pl.migibud.studentApp.repository.EnrolmentRepository;
 import pl.migibud.studentApp.repository.StudentRepository;
@@ -35,6 +36,7 @@ class EnrolmentServiceImpl implements EnrolmentService {
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
     private final EnrolmentRepository enrolmentRepository;
+    private final EnrolmentMapper enrolmentMapper;
 
     @Override
     @Transactional
@@ -52,7 +54,7 @@ class EnrolmentServiceImpl implements EnrolmentService {
         isStudentStatusActive(student);
         isCourseStatusActive(course);
         ifCourseParticipantsLimitNotExceeded(course);
-        isStudentEnrolledInCourse(studentId,courseId);
+        isStudentEnrolledInCourse(studentId, courseId);
         isStudentAlreadyEnrolledOnThreeActiveCourses(studentId);
 
         Enrolment enrolment = Enrolment.builder()
@@ -65,15 +67,16 @@ class EnrolmentServiceImpl implements EnrolmentService {
     }
 
 
-
     @Override
     public Page<Enrolment> listEnrolments(PageRequest pageRequest) {
         return null;
     }
 
     @Override
-    public Enrolment getEnrolmentById(Long enrolmentId) {
-        return null;
+    public EnrolmentDto getEnrolmentById(Long enrolmentId) {
+        Enrolment enrolment = enrolmentRepository.findById(enrolmentId)
+                .orElseThrow(() -> new EnrolmentException(EnrolmentError.ENROLMENT_NOT_FOUND));
+        return enrolmentMapper.mapEnrolmentToEnrolmentDto(enrolment);
     }
 
     @Override
@@ -95,7 +98,7 @@ class EnrolmentServiceImpl implements EnrolmentService {
 
         isStudentStatusActive(student);
         isCourseStatusActive(course);
-        isStudentNotEnrolledInCourse(studentId,courseId);
+        isStudentNotEnrolledInCourse(studentId, courseId);
 
         Enrolment enrolment = enrolmentRepository.findByStudent_IdAndCourse_Id(studentId, courseId)
                 .orElseThrow(() -> new EnrolmentException(EnrolmentError.ENROLMENT_NOT_FOUND));
@@ -111,11 +114,11 @@ class EnrolmentServiceImpl implements EnrolmentService {
     @Async //TODO - Understand why @Async and @TransactionalEventListener
     @EventListener
 //    @Transactional
-    void handleStudentInactiveStatusEvent(StudentInactiveStatusEvent event){
-        log.info("Handling event - change status of student to INACTIVE - studentId: "+event.getStudentId());
+    void handleStudentInactiveStatusEvent(StudentInactiveStatusEvent event) {
+        log.info("Handling event - change status of student to INACTIVE - studentId: " + event.getStudentId());
 
         List<Enrolment> enrolments = enrolmentRepository.findByStudent_IdAndStudentStatus(event.getStudentId(), Status.ACTIVE);
-        if (enrolments.size()>0){
+        if (enrolments.size() > 0) {
             enrolments
                     .forEach(enrolment -> {
                         enrolment.setStudentStatus(Status.INACTIVE);
@@ -131,24 +134,24 @@ class EnrolmentServiceImpl implements EnrolmentService {
 //        System.out.println(5/0);
     }
 
-    private boolean isStudentStatusActive(Student student){
-        if (Status.INACTIVE.equals(student.getStatus())){
+    private boolean isStudentStatusActive(Student student) {
+        if (Status.INACTIVE.equals(student.getStatus())) {
             throw new StudentException(StudentError.STUDENT_IS_INACTIVE);
         }
         return true;
     }
 
-    private boolean isCourseStatusActive(Course course){
-        if (Status.INACTIVE.equals(course.getStatus())){
+    private boolean isCourseStatusActive(Course course) {
+        if (Status.INACTIVE.equals(course.getStatus())) {
             throw new CourseException(CourseError.COURSE_IS_INACTIVE);
         }
         return true;
     }
 
-    private boolean ifCourseParticipantsLimitNotExceeded(Course course){
+    private boolean ifCourseParticipantsLimitNotExceeded(Course course) {
         Long participantsLimit = course.getParticipantsLimit();
         Long participantsNumber = course.getParticipantsNumber();
-        if (participantsLimit.equals(participantsNumber)){
+        if (participantsLimit.equals(participantsNumber)) {
             throw new CourseException(CourseError.PARTICIPANTS_LIMIT_EXCEEDED);
         }
         course.setParticipantsNumber(++participantsNumber);
@@ -156,28 +159,28 @@ class EnrolmentServiceImpl implements EnrolmentService {
         return true;
     }
 
-    private boolean isStudentEnrolledInCourse(Long studentId,Long courseId){
-        long count = enrolmentRepository.countByStudent_IdAndCourse_IdAndStudentStatus(studentId, courseId,Status.ACTIVE);
-        if (count!=0){
+    private boolean isStudentEnrolledInCourse(Long studentId, Long courseId) {
+        long count = enrolmentRepository.countByStudent_IdAndCourse_IdAndStudentStatus(studentId, courseId, Status.ACTIVE);
+        if (count != 0) {
             throw new EnrolmentException(EnrolmentError.STUDENT_ALREADY_ENROLLED_IN_COURSE);
         }
         return false;
     }
 
-    private boolean isStudentNotEnrolledInCourse(Long studentId,Long courseId){
-        long count = enrolmentRepository.countByStudent_IdAndCourse_IdAndStudentStatus(studentId, courseId,Status.ACTIVE);
-        if (count==0){
+    private boolean isStudentNotEnrolledInCourse(Long studentId, Long courseId) {
+        long count = enrolmentRepository.countByStudent_IdAndCourse_IdAndStudentStatus(studentId, courseId, Status.ACTIVE);
+        if (count == 0) {
             throw new EnrolmentException(EnrolmentError.STUDENT_IS_NOT_ENROLLED_IN_COURSE);
         }
         return false;
     }
 
-    private boolean isStudentAlreadyEnrolledOnThreeActiveCourses(Long studentId){
+    private boolean isStudentAlreadyEnrolledOnThreeActiveCourses(Long studentId) {
         List<Enrolment> enrolments = enrolmentRepository.findByStudent_IdAndStudentStatus(studentId, Status.ACTIVE);
         long count = enrolments.stream()
                 .filter(enrolment -> Status.ACTIVE.equals(enrolment.getCourse().getStatus()))
                 .count();
-        if (count==3){
+        if (count == 3) {
             throw new EnrolmentException(EnrolmentError.STUDENT_ALREADY_ENROLLED_IN_THREE_ACTIVE_COURSES);
         }
         return false;
