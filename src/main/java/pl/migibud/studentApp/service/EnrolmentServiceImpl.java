@@ -110,7 +110,7 @@ class EnrolmentServiceImpl implements EnrolmentService {
 
     @Async //TODO - Understand why @Async and @TransactionalEventListener
     @EventListener
-    @Transactional
+//    @Transactional
     void handleStudentInactiveStatusEvent(StudentInactiveStatusEvent event){
         log.info("Handling event - change status of student to INACTIVE - studentId: "+event.getStudentId());
 
@@ -126,6 +126,9 @@ class EnrolmentServiceImpl implements EnrolmentService {
                         enrolmentRepository.save(enrolment);
                     });
         }
+
+        //TODO - check out transactions
+//        System.out.println(5/0);
     }
 
     private boolean isStudentStatusActive(Student student){
