@@ -2,6 +2,7 @@ package pl.migibud.studentApp.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,10 +18,14 @@ import java.util.stream.Collectors;
 
 import static pl.migibud.studentApp.auth.SecurityConstants.*;
 
+@Slf4j
 class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+
+
         String header = request.getHeader(HEADER_AUTH);
 
         if (header != null && header.startsWith(HEADER_AUTH_BEARER_PREFIX)) {
