@@ -11,8 +11,10 @@ import pl.migibud.studentApp.exception.course.CourseException;
 import pl.migibud.studentApp.model.Course;
 import pl.migibud.studentApp.model.InitialCourseData;
 import pl.migibud.studentApp.model.dto.CourseDto;
+import pl.migibud.studentApp.model.dto.CourseDto2;
 import pl.migibud.studentApp.model.dto.CreateCourseRequest;
 import pl.migibud.studentApp.model.mapper.CourseMapper;
+import pl.migibud.studentApp.repository.CourseQueryRepository;
 import pl.migibud.studentApp.repository.CourseRepository;
 
 import java.util.List;
@@ -26,6 +28,7 @@ class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
     private final InitialCourseData initialCourseData;
+    private final CourseQueryRepository courseQueryRepository;
 
     @Override
     public CourseDto addCourse(CreateCourseRequest createCourseRequest) {
@@ -44,11 +47,16 @@ class CourseServiceImpl implements CourseService {
         return new PageImpl<>(collect,coursePage.getPageable(),coursePage.getTotalElements());
     }
 
+//    @Override
+//    public CourseDto getCourseById(Long courseId) {
+//        return courseRepository.findById(courseId)
+//                .map(courseMapper::mapCourseToCourseDto)
+//                .orElseThrow(()->new CourseException(CourseError.COURSE_NOT_FOUND));
+//    }
+
     @Override
-    public CourseDto getCourseById(Long courseId) {
-        return courseRepository.findById(courseId)
-                .map(courseMapper::mapCourseToCourseDto)
-                .orElseThrow(()->new CourseException(CourseError.COURSE_NOT_FOUND));
+    public CourseDto2 getCourseById(Long courseId) {
+        return courseQueryRepository.findById(courseId);
     }
 
     @Override

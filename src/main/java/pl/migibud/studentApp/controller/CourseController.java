@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.migibud.studentApp.model.dto.CourseDto;
+import pl.migibud.studentApp.model.dto.CourseDto2;
 import pl.migibud.studentApp.model.dto.CreateCourseRequest;
 import pl.migibud.studentApp.service.CourseService;
 
@@ -31,7 +32,7 @@ class CourseController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<CourseDto> getCourseById(@PathVariable Long id){
+    ResponseEntity<CourseDto2> getCourseById(@PathVariable Long id){
         return ResponseEntity.ok(courseService.getCourseById(id));
     }
 
